@@ -35,7 +35,10 @@
             android:layout_height="wrap_content"
             android:text="Create"
             android:layout_gravity="center"
-            android:layout_marginTop="5dp"/>
+            android:layout_marginTop="5dp"
+            android:id="@+id/createAccount"
+            android:onClick="fragCreateAccount"
+            />
 
     </LinearLayout>
 
