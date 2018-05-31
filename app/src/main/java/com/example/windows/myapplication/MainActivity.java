@@ -125,13 +125,61 @@ public class MainActivity extends AppCompatActivity {
 
     public void update(FirebaseUser user)
     {
-if(user!=null){
-    Toast.makeText(this,"Successful",Toast.LENGTH_LONG).show();
-}
-else{
-    Toast.makeText(this,"Account already exists",Toast.LENGTH_LONG).show();
-}
+        if(user!=null){
+            Toast.makeText(this,"Successful",Toast.LENGTH_LONG).show();
+        }
+        else{
+            Toast.makeText(this,"Account already exists",Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void fragLogin(View view)
+    {
+        EditText email = (EditText) findViewById(R.id.emailId);
+        String emailVal = email.getText().toString();
+
+        EditText pswd = (EditText) findViewById(R.id.pswd);
+        String pswdVal = pswd.getText().toString();
+
+        mAuth.signInWithEmailAndPassword(emailVal.toString(), pswdVal.toString())
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            updateLogin(user);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithEmail:failure", task.getException());
+
+                            updateLogin(null);
+                        }
+
+                        // ...
+                    }
+                });
+
+
+    }
+
+    private void updateLogin(FirebaseUser user)
+    {
+        if(user!=null){
+
+            Intent intent = new Intent(MainActivity.this, Main2Activity.class);
+            startActivity(intent);
+            Toast.makeText(this,"Logged in",Toast.LENGTH_LONG).show();
+        }
+        else
+         {
+             Toast.makeText(this,"Failed",Toast.LENGTH_LONG).show();
+
+         }
     }
 
 }
+
+
 
