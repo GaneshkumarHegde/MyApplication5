@@ -40,6 +40,10 @@ public class MainActivity extends AppCompatActivity {
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         updateUI(account);
         mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        updateLogin(currentUser);
+
+
     }
 
 
@@ -63,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateUI(GoogleSignInAccount account) {
         if (account != null) {
-            Intent intent = new Intent(MainActivity.this, Main2Activity.class);
+            Intent intent = new Intent(MainActivity.this, HomeScreen.class);
             startActivity(intent);
         }
     }
@@ -83,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleSignInResult(Task<GoogleSignInAccount> task) {
         if (task != null) {
-            Intent intent = new Intent(MainActivity.this, Main2Activity.class);
+            Intent intent = new Intent(MainActivity.this, HomeScreen.class);
             startActivity(intent);
         }
     }
@@ -168,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
     {
         if(user!=null){
 
-            Intent intent = new Intent(MainActivity.this, Main2Activity.class);
+            Intent intent = new Intent(MainActivity.this, HomeScreen.class);
             startActivity(intent);
             Toast.makeText(this,"Logged in",Toast.LENGTH_LONG).show();
         }
