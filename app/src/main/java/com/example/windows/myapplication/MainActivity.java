@@ -1,5 +1,6 @@
 package com.example.windows.myapplication;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
@@ -24,16 +25,16 @@ import com.google.firebase.auth.FirebaseUser;
 import static android.content.ContentValues.TAG;
 
 public class MainActivity extends AppCompatActivity {
+    private ProgressDialog progressDialog;
+    private ProgressDialog progressDialog1;
     GoogleSignInClient mGoogleSignInClient;
     FirebaseAuth mAuth;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
                 .build();
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
@@ -42,8 +43,8 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         updateLogin(currentUser);
-
-
+        progressDialog = new ProgressDialog(this);
+        progressDialog1 = new ProgressDialog(this);
     }
 
 
@@ -60,7 +61,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void continueWithGoogle(View view) {
-
+        progressDialog.setMessage("Please Wait...");
+        progressDialog.show();
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, 0);
     }
@@ -87,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleSignInResult(Task<GoogleSignInAccount> task) {
         if (task != null) {
+            progressDialog.dismiss();
             Intent intent = new Intent(MainActivity.this, HomeScreen.class);
             startActivity(intent);
         }
@@ -102,9 +105,11 @@ public class MainActivity extends AppCompatActivity {
 
         EditText pswd1 = (EditText) findViewById(R.id.password1);
         String pswdVal1 = pswd1.getText().toString();
+        progressDialog.setMessage("Loading");
+        progressDialog.show();
         Toast.makeText(this,emailVal+" "+pswdVal,Toast.LENGTH_LONG).show();
         if (!pswdVal.equals(pswdVal1)) {
-
+            progressDialog.dismiss();
             pswd1.setError("Passwords don't match");
         } else {
             mAuth.createUserWithEmailAndPassword(emailVal.toString().trim(), pswdVal.toString().trim())
@@ -130,9 +135,11 @@ public class MainActivity extends AppCompatActivity {
     public void update(FirebaseUser user)
     {
         if(user!=null){
+            progressDialog.dismiss();
             Toast.makeText(this,"Successful",Toast.LENGTH_LONG).show();
         }
         else{
+            progressDialog.dismiss();
             Toast.makeText(this,"Account already exists",Toast.LENGTH_LONG).show();
         }
     }
@@ -144,7 +151,8 @@ public class MainActivity extends AppCompatActivity {
 
         EditText pswd = (EditText) findViewById(R.id.pswd);
         String pswdVal = pswd.getText().toString();
-
+        progressDialog1.setMessage("Logging in...");
+        progressDialog1.show();
         mAuth.signInWithEmailAndPassword(emailVal.toString(), pswdVal.toString())
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -154,10 +162,11 @@ public class MainActivity extends AppCompatActivity {
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateLogin(user);
+                            progressDialog1.dismiss();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
-
+                            progressDialog1.dismiss();
                             updateLogin(null);
                         }
 
@@ -171,13 +180,14 @@ public class MainActivity extends AppCompatActivity {
     private void updateLogin(FirebaseUser user)
     {
         if(user!=null){
-
+            //progressDialog1.dismiss();
             Intent intent = new Intent(MainActivity.this, HomeScreen.class);
             startActivity(intent);
             Toast.makeText(this,"Logged in",Toast.LENGTH_LONG).show();
         }
         else
          {
+             //progressDialog1.dismiss();
              Toast.makeText(this,"Failed",Toast.LENGTH_LONG).show();
 
          }
