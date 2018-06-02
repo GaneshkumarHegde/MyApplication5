@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.ChildEventListener;
@@ -19,6 +20,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.util.HashMap;
 
 import static android.content.ContentValues.TAG;
 
@@ -40,11 +45,8 @@ public class HomeFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    FirebaseDatabase database;
     DatabaseReference myRef;
-    StringBuffer sb;
-
-    RecyclerView rcView;
+    static StringBuffer sb;
     private OnFragmentInteractionListener mListener;
 
     public HomeFragment() {
@@ -76,43 +78,40 @@ public class HomeFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        sb = new StringBuffer("");
+       sb = new StringBuffer("");
 
-       /* DatabaseReference myRef = database.getReference("server/saving-data/fireblog/posts");
-
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Movie movie = dataSnapshot.getValue(Movie.class);
-             //   System.out.println(movie);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
-*/
+        myRef = FirebaseDatabase.getInstance().getReference().child("Movies");
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
         final View view= inflater.inflate(R.layout.fragment_home, container, false);
-        rcView=(RecyclerView) view.findViewById(R.id.list);
-
-       //  myRef = database.getReference("https://myapplication5-82b3c.firebaseio.com/");
-
-        // database = FirebaseDatabase.getInstance();
-         //myRef = database.getReference().child("Movies");
-       /* myRef.addChildEventListener(new ChildEventListener() {
+        myRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
-            }
+               /* for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
 
+                    if (dataSnapshot1.getKey().equals("Title")) {
+                        sb.append(dataSnapshot1.getValue()+" ");
+
+                    }
+
+                    if (dataSnapshot1.getKey().equals("Language")) {
+                        sb.append(dataSnapshot1.getValue()+" ");
+                    }
+
+
+                }*/
+               Movie movie = dataSnapshot.getValue(Movie.class);
+               sb.append(movie.getTitle()+"\n"+movie.getLanguage()+"\n\n");
+                TextView textView = (TextView)view.findViewById(R.id.hometext);
+                textView.setText(sb.toString());
+
+            }
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
@@ -132,8 +131,9 @@ public class HomeFragment extends Fragment {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });*/
+        });
         return view;
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
