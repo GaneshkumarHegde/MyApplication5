@@ -107,7 +107,6 @@ public class MainActivity extends AppCompatActivity {
         String pswdVal1 = pswd1.getText().toString();
         progressDialog.setMessage("Loading");
         progressDialog.show();
-        Toast.makeText(this,emailVal+" "+pswdVal,Toast.LENGTH_LONG).show();
         if (!pswdVal.equals(pswdVal1)) {
             progressDialog.dismiss();
             pswd1.setError("Passwords don't match");

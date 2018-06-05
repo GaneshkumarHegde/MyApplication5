@@ -1,44 +1,57 @@
 package com.example.windows.myapplication;
 
 public class Movie {
-    public String title;
-    public String about;
-    public String language;
-    public String[] screens;
-    public String[] genre;
-    public Movie(String title,String about,String language,String[] screens,String[] genre)
+    private String Title;
+    private String About;
+    private String Language;
+    private int[] screens;
+    private int[] genre;
+    public String name;
+    public String url;
+    public int id;
+    public Movie(){
+
+    }
+    public Movie(String name, String url) {
+        this.name = name;
+        this.url= url;
+    }
+    public Movie(String About,String Language,String Title,int id,String url)
     {
-        this.about = about;
-        this.genre = genre;
-        this.title = title;
-        this.language = language;
-        this.screens = screens;
+        this.About = About;
+        this.url = url;
+        this.Title = Title;
+        this.Language = Language;
+        this.id = id;
     }
 
 
     public String getTitle() {
-        return title;
+        return Title;
+    }
+
+    public int getID(){
+        return id;
     }
 
 
-
     public String getLanguage() {
-        return language;
+        return Language;
     }
 
 
 
     public String getAbout(){
 
-        return about;
+        return About;
     }
 
-    public String[] getScreens(){
-        return screens;
+    public String getName() {
+        return name;
     }
 
-    public String[] getGenre(){
-        return genre;
+    public String getUrl() {
+        return url;
     }
 
 
