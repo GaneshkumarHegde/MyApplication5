@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -32,6 +33,7 @@ public class BookMovie extends AppCompatActivity {
     int id;
     DatabaseReference myRef;
     private DatabaseReference mDatabase;
+    private DatabaseReference mDatabase2;
     ImageView imageViewMovie;
     TextView textViewTitle;
     TextView textViewLang;
@@ -39,6 +41,7 @@ public class BookMovie extends AppCompatActivity {
     private ListView listView;
     private ArrayList<String> list = new ArrayList<>();
     String value;
+    static String movieName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +52,6 @@ public class BookMovie extends AppCompatActivity {
         listView = (ListView)findViewById(R.id.listViewTheatres);
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,list);
         listView.setAdapter(arrayAdapter);
-        //arrayAdapter.notifyDataSetChanged();
         id = i.getIntExtra("ID",0);
 
         imageViewMovie = (ImageView)findViewById(R.id.movieImage);
@@ -100,9 +102,9 @@ public class BookMovie extends AppCompatActivity {
 
                     Theatre theatre = dataSnapshot2.getValue(Theatre.class);
                     if(theatre.getID() == id){
-                        Toast.makeText(getApplicationContext(),dataSnapshot.getKey(),Toast.LENGTH_SHORT).show();
+
                         value = dataSnapshot.getKey().trim().toString();
-                        Log.d("Datasnapshot",dataSnapshot.getKey());
+                        movieName = dataSnapshot2.getKey();
                         if(value!=null)
                             list.add(value);
                     }
@@ -130,6 +132,81 @@ public class BookMovie extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
+                final String str = arrayAdapter.getItem(i);
+
+               // Toast.makeText(getApplicationContext(),  s+ "", Toast.LENGTH_SHORT).show();
+                mDatabase2 = FirebaseDatabase.getInstance().getReference().child("Theatres");
+                mDatabase2.addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        long  screenId = 0;
+                        int numOfRows = 0 ,numOfColumns = 0;
+
+
+
+                            if (dataSnapshot.getKey().trim().equals(str.trim())) {
+                                DataSnapshot dataSnapshot1 = dataSnapshot.child("Movies");
+                                for (DataSnapshot dataSnapshot2 : dataSnapshot1.getChildren()) {
+
+                                    if (dataSnapshot2.getKey().equals(movieName)) {
+                                        Theatre theatre = dataSnapshot2.getValue(Theatre.class);
+                                        screenId = theatre.getScreen();
+
+                                       // Toast.makeText(getApplicationContext(), screenId + "", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                                DataSnapshot dataSnapshot3 = dataSnapshot.child("Screens");
+                                for (DataSnapshot dataSnapshot4 : dataSnapshot3.getChildren()) {
+
+
+                                        Screen screen = dataSnapshot4.getValue(Screen.class);
+                                        if(screenId == screen.getScreenid() && screenId != 0) {
+                                            numOfRows = screen.getRows();
+                                            numOfColumns = screen.getColumns();
+                                        }
+                                        //Toast.makeText(getApplicationContext(), numOfRows + " "+numOfColumns, Toast.LENGTH_SHORT).show();
+
+                                }
+
+                            }
+
+                            if(numOfColumns !=0 && numOfRows !=0 ){
+                                Toast.makeText(getApplicationContext(), numOfRows + " "+numOfColumns, Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(getApplicationContext(),TheatreLayout.class);
+                                intent.putExtra("Rows",numOfRows);
+                                intent.putExtra("Columns",numOfColumns);
+                                startActivity(intent);
+                            }
+                        }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
 
             }
         });
